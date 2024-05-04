@@ -10,9 +10,9 @@ const sendPrompt = async (openai, prompt) => {
     model: 'gpt-3.5-turbo',
   };
 
-  const chatCompletion = await openai.chat.completions.create(params);
+  const query = await openai.chat.completions.create(params);
 
-  return chatCompletion.choices[0].message.content;
+  return query.choices[0].message.content;
 };
 
 module.exports = sendPrompt;
