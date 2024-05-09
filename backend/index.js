@@ -4,11 +4,11 @@
  */
 
 // Import necessary libraries
+const path = require('path');
 const express = require('express');
 const bodyParser = require('body-parser');
 require('dotenv').config();
-const { chat } = require('./services/openai');
-const { translate } = require('./services/openai');
+const { chat, translate, summarize } = require('./services/openai');
 const { LANGUAGE } = require('./helpers/constants');
 const logger = require('./middleware/logger');
 
@@ -42,7 +42,7 @@ app.post('/chat', async (req, res) => {
       return res.status(200).json({ success: true, message: response });
     }
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({ success: false, message: error.message });
   }
 });
 
@@ -58,7 +58,41 @@ app.post('/translate', async (req, res) => {
       return res.status(200).json({ success: true, message: translated_text });
     }
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+app.post('/summarize', async (req, res) => {
+  const { image_selection } = req.body;
+  let filePath = '';
+  switch (image_selection) {
+    case 1:
+      filePath = './assets/histogram_1.jpg';
+      break;
+    case 2:
+      filePath = './assets/bar_chart_1.jpg';
+      break;
+    case 3:
+      filePath = './assets/bar_chart_2.jpg';
+      break;
+    case 4:
+      filePath = './assets/bar_chart_3.jpg';
+      break;
+    default:
+      filePath = '';
+      break;
+  }
+  try {
+    if (!filePath) {
+      return res.status(400).json({ success: false, message: 'File path is required' });
+    } else {
+      const response = await summarize(path.resolve(filePath));
+
+      return res.status(200).json({ success: true, message: response });
+    }
+  }
+  catch (error) {
+    res.status(500).json({ success: false, message: error.message });
   }
 });
 

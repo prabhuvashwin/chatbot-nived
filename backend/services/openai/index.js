@@ -9,6 +9,7 @@ const {
   translateToJapanese,
   translateToChinese
 } = require('./translations');
+const summarizeImage = require('./image-summarize');
 
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY; // Ensure you have your API key in an .env file
 
@@ -54,7 +55,14 @@ const translate = async (text, lang) => {
   return translated_text;
 };
 
+const summarize = async (filePath) => {
+  const summary_message = await summarizeImage(openai, filePath);
+
+  return summary_message;
+};
+
 module.exports = {
   chat,
-  translate
+  translate,
+  summarize
 };
